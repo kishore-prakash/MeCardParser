@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: SwiftPM (build & test)
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Swift version
+        run: swift --version
+
+      - name: Build
+        run: swift build
+
+      - name: Test
+        run: swift test
+
+  example:
+    name: Example app (iOS build)
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      # Use the runner's default Xcode, which ships with a matching iOS
+      # Simulator runtime. A hand-picked Xcode path may lack simulator
+      # runtimes, which makes every simulator destination unresolvable.
+      - name: Show available simulator destinations
+        run: |
+          xcodebuild -version
+          xcodebuild -project Example/MeCardParser.xcodeproj \
+            -scheme MeCardParser-Example -showdestinations 2>/dev/null | grep -i "iOS Simulator" || true
+
+      - name: Build example app
+        run: |
+          xcodebuild \
+            -project Example/MeCardParser.xcodeproj \
+            -scheme MeCardParser-Example \
+            -destination 'generic/platform=iOS Simulator' \
+            clean build \
+            CODE_SIGNING_ALLOWED=NO

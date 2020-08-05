@@ -38,16 +38,53 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        switch segue.destination {
-        case is ScannerVC:
-            let vc = segue.destination as! ScannerVC
-            vc.delegate = self
-        default:
-            break
+    /// Presents an alert with a text field so a MeCard string can be entered by
+    /// hand (or pasted) and parsed, without opening the camera.
+    @IBAction func showMeCardInput(_ sender: Any) {
+        let alert = UIAlertController(
+            title: "Enter MeCard",
+            message: "Paste or type a MeCard string to parse.",
+            preferredStyle: .alert
+        )
+
+        alert.addTextField { textField in
+            textField.placeholder = "MECARD:N:Doe,John;TEL:5555555555;..."
+            textField.clearButtonMode = .whileEditing
+            textField.autocorrectionType = .no
+            textField.autocapitalizationType = .none
+        }
+
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Parse", style: .default) { [weak self, weak alert] _ in
+            let code = alert?.textFields?.first?.text ?? ""
+            self?.handle(code: code)
+        })
+
+        present(alert, animated: true)
+    }
+
+    /// Parses a MeCard string and either shows the resulting contact or an error.
+    private func handle(code: String) {
+        print("MeCard input: \(code)")
+
+        switch MeCardContactBuilder().makeContact(from: code) {
+        case .success(let contact):
+            show(contact: contact)
+        case .failure(let error):
+            presentParseError(message: error.localizedDescription)
         }
     }
-    
+
+    private func presentParseError(message: String) {
+        let alert = UIAlertController(
+            title: "Could not parse MeCard",
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+
     func show(contact: CNContact) {
         let contactView = CNContactViewController(forUnknownContact: contact)
         contactView.contactStore = CNContactStore()
@@ -67,22 +104,5 @@ class ViewController: UIViewController {
         contactController?.dismiss(animated: true, completion: nil)
     }
 
-}
-
-extension ViewController: ScannerVCDelegate {
-    func scanSuccessful(code: String) {
-        print("Scanned Data: \(code)")
-        
-        guard let contact = Parser.parserMeCard(data: code) else {
-            print("Error while Parsing")
-            return
-        }
-        
-        show(contact: contact)
-    }
-    
-    func scanFailed(error: String) {
-        print("Failed with error: \(error)")
-    }
 }
 

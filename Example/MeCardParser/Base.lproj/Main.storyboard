@@ -39,7 +39,7 @@
                                 <rect key="frame" x="158" y="318.5" width="59" height="30"/>
                                 <state key="normal" title="Scan QR"/>
                                 <connections>
-                                    <segue destination="Nni-dH-wki" kind="presentation" id="a9l-pp-1Bc"/>
+                                    <action selector="showMeCardInput:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="a9l-pp-1Bc"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -54,24 +54,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="138" y="134"/>
-        </scene>
-        <!--ScannerVC-->
-        <scene sceneID="Xpx-3Q-R4c">
-            <objects>
-                <viewController id="Nni-dH-wki" customClass="ScannerVC" customModule="MeCardParser_Example" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="cZY-qg-c6T"/>
-                        <viewControllerLayoutGuide type="bottom" id="BKd-Rp-f3I"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="pCt-jb-vTq">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="bIU-7K-euD" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="879" y="134"/>
         </scene>
     </scenes>
 </document>
